@@ -2,23 +2,45 @@ import { createHeartScene } from './heart-scene.js';
 import { circulationSteps, scenes, structures } from './content.js';
 
 const root = document.querySelector('#app');
-const level = Number(document.body.dataset.level || 0);
-const isCatalog = document.body.dataset.page === 'catalog';
-const isHome = level === 0 && !isCatalog;
-const isRootPage = isHome || isCatalog;
-const sceneIndex = Math.max(0, Math.min(level - 1, scenes.length - 1));
-const currentScene = scenes[sceneIndex];
+const initialLevel = Number(document.body.dataset.level || 0);
+const appUrl = document.body.dataset.level ? '../index.html' : './index.html';
+let level = initialLevel;
+let isCatalog = document.body.dataset.page === 'catalog';
+let isHome = level === 0 && !isCatalog;
+let sceneIndex = Math.max(0, Math.min(level - 1, scenes.length - 1));
+let currentScene = scenes[sceneIndex];
 const escapeHTML = value => String(value).replace(/[&<>"']/g, character => ({
   '&': '&amp;', '<': '&lt;', '>': '&gt;', '"': '&quot;', "'": '&#39;'
 }[character]));
-const levelUrl = number => `${isRootPage ? './levels/' : './'}scene-${String(number).padStart(2, '0')}.html`;
-const homeUrl = isRootPage ? './index.html' : '../index.html';
-const catalogUrl = isRootPage ? './all-levels.html' : '../all-levels.html';
+const levelUrl = number => `${appUrl}#/level/${number}`;
+const homeUrl = `${appUrl}#/home`;
+const catalogUrl = `${appUrl}#/catalog`;
 
 const savedTheme = localStorage.getItem('cardio-theme');
 const systemTheme = window.matchMedia('(prefers-color-scheme: light)').matches ? 'light' : 'dark';
 let activeTheme = savedTheme || systemTheme;
+let activeModel = null;
+let disposeCurrentScene = () => {};
 document.documentElement.dataset.theme = activeTheme;
+
+if (document.body.dataset.level && !window.location.hash) {
+  window.location.replace(`${appUrl}#/level/${initialLevel}`);
+} else if (document.body.dataset.page === 'catalog' && !window.location.hash) {
+  window.location.replace(`${appUrl}#/catalog`);
+}
+
+function updateRouteState() {
+  const levelMatch = window.location.hash.match(/^#\/level\/(\d+)$/);
+  const hasRoute = window.location.hash.length > 0;
+  const requestedLevel = levelMatch ? Number(levelMatch[1]) : 0;
+  level = requestedLevel >= 1 && requestedLevel <= scenes.length
+    ? requestedLevel
+    : hasRoute ? 0 : initialLevel;
+  isCatalog = window.location.hash === '#/catalog' || (!hasRoute && document.body.dataset.page === 'catalog');
+  isHome = level === 0 && !isCatalog;
+  sceneIndex = Math.max(0, Math.min(level - 1, scenes.length - 1));
+  currentScene = scenes[sceneIndex];
+}
 
 function levelCards() {
   return scenes.map((scene, index) => `
@@ -95,13 +117,13 @@ function levelMarkup() {
   return `
     <main class="workspace">
       <aside class="sidebar">
-        <a class="back-link" href="../index.html">← <span>Kembali ke beranda</span></a>
+        <a class="back-link" href="${homeUrl}">← <span>Kembali ke beranda</span></a>
         <div class="sidebar-label">JALUR PEMBELAJARAN</div>
         <nav class="chapter-nav" aria-label="Daftar level">${sceneNavigation()}</nav>
         <div class="sidebar-note"><span>i</span><p>Simulasi edukasional yang disederhanakan. Bukan perangkat medis.</p></div>
       </aside>
       <section class="lesson">
-        <div class="lesson-header"><div><div class="breadcrumb"><a href="../index.html">BERANDA</a><span>/</span>${currentScene.category.toUpperCase()}</div><h1><span>LEVEL ${String(level).padStart(2, '0')}</span> ${currentScene.title}</h1><p>${currentScene.description}</p></div><a class="all-levels" href="../all-levels.html">Semua level <span>↗</span></a></div>
+        <div class="lesson-header"><div><div class="breadcrumb"><a href="${homeUrl}">BERANDA</a><span>/</span>${currentScene.category.toUpperCase()}</div><h1><span>LEVEL ${String(level).padStart(2, '0')}</span> ${currentScene.title}</h1><p>${currentScene.description}</p></div><a class="all-levels" href="${catalogUrl}">Semua level <span>↗</span></a></div>
         <div class="lesson-grid">
           <section class="visual-card">
             <div class="visual-card-head"><span class="live-tag"><i></i> MODEL INTERAKTIF</span><span id="model-hint">Seret untuk memutar · Scroll untuk zoom</span></div>
@@ -113,7 +135,7 @@ function levelMarkup() {
             <div id="level-content">${levelContent()}</div>
           </aside>
         </div>
-        <div class="bottom-bar"><span><span class="key-hint">TIP</span> ${levelTip()}</span><div class="level-pager">${level > 1 ? `<a href="${levelUrl(level - 1)}">← Sebelumnya</a>` : '<span></span>'}${level < 12 ? `<a class="next-link" href="${levelUrl(level + 1)}">Berikutnya <span>→</span></a>` : '<a class="next-link" href="../index.html">Selesai <span>✓</span></a>'}</div></div>
+        <div class="bottom-bar"><span><span class="key-hint">TIP</span> ${levelTip()}</span><div class="level-pager">${level > 1 ? `<a href="${levelUrl(level - 1)}">← Sebelumnya</a>` : '<span></span>'}${level < 12 ? `<a class="next-link" href="${levelUrl(level + 1)}">Berikutnya <span>→</span></a>` : `<a class="next-link" href="${homeUrl}">Selesai <span>✓</span></a>`}</div></div>
       </section>
     </main>`;
 }
@@ -161,14 +183,18 @@ function bindTheme() {
     label.textContent = activeTheme === 'dark' ? 'Gelap' : 'Terang';
     window.dispatchEvent(new CustomEvent('cardio-theme-change', { detail: activeTheme }));
   });
-  window.matchMedia('(prefers-color-scheme: light)').addEventListener('change', event => {
-    if (localStorage.getItem('cardio-theme')) return;
-    activeTheme = event.matches ? 'light' : 'dark';
-    document.documentElement.dataset.theme = activeTheme;
-    label.textContent = activeTheme === 'dark' ? 'Gelap' : 'Terang';
-    window.dispatchEvent(new CustomEvent('cardio-theme-change', { detail: activeTheme }));
-  });
 }
+
+window.matchMedia('(prefers-color-scheme: light)').addEventListener('change', event => {
+  if (localStorage.getItem('cardio-theme')) return;
+  activeTheme = event.matches ? 'light' : 'dark';
+  document.documentElement.dataset.theme = activeTheme;
+  const label = document.querySelector('#theme-label');
+  if (label) label.textContent = activeTheme === 'dark' ? 'Gelap' : 'Terang';
+  window.dispatchEvent(new CustomEvent('cardio-theme-change', { detail: activeTheme }));
+});
+
+window.addEventListener('cardio-theme-change', event => activeModel?.setTheme(event.detail));
 
 function getLog() {
   try {
@@ -206,7 +232,13 @@ function bootScene() {
     return;
   }
 
-  window.addEventListener('cardio-theme-change', event => model.setTheme(event.detail));
+  activeModel = model;
+  let overviewTimer = null;
+  disposeCurrentScene = () => {
+    if (overviewTimer) window.clearInterval(overviewTimer);
+    model.dispose();
+    if (activeModel === model) activeModel = null;
+  };
   const disclaimerCheck = document.querySelector('#disclaimer-check');
   if (disclaimerCheck) {
     disclaimerCheck.addEventListener('change', () => {
@@ -219,7 +251,6 @@ function bootScene() {
       if (!disclaimerCheck.checked) event.preventDefault();
     });
   }
-  let overviewTimer = null;
   let overviewStep = 0;
   const advanceOverview = () => {
     const active = circulationSteps[overviewStep % circulationSteps.length];
@@ -416,5 +447,30 @@ function bootScene() {
 
 }
 
-shell();
-bootScene();
+function renderApp() {
+  const cleanup = disposeCurrentScene;
+  disposeCurrentScene = () => {};
+  cleanup();
+  updateRouteState();
+  shell();
+  bootScene();
+}
+
+root.addEventListener('click', event => {
+  if (!(event.target instanceof Element)) return;
+  const anchor = event.target.closest('a[href]');
+  if (!anchor || event.defaultPrevented || event.button !== 0 || event.metaKey || event.ctrlKey || event.shiftKey || event.altKey) return;
+
+  const destination = new URL(anchor.href, window.location.href);
+  if (destination.origin !== window.location.origin || !destination.pathname.endsWith('/index.html')) return;
+  if (!/^#\/(?:home|catalog|level\/(?:[1-9]|1[0-2]))$/.test(destination.hash)) return;
+
+  event.preventDefault();
+  if (destination.hash === window.location.hash && destination.pathname === window.location.pathname) return;
+  window.history.pushState(null, '', destination.href);
+  renderApp();
+  window.scrollTo(0, 0);
+});
+
+window.addEventListener('popstate', renderApp);
+renderApp();

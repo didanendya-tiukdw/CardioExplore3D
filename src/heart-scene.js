@@ -402,6 +402,11 @@ export function createHeartScene(container, onSelect) {
       renderer.setAnimationLoop(null);
       renderer.domElement.removeEventListener('pointerup', handlePointer);
       controls.dispose();
+      scene.traverse(object => {
+        if (object.geometry) object.geometry.dispose();
+        if (Array.isArray(object.material)) object.material.forEach(item => item.dispose());
+        else if (object.material) object.material.dispose();
+      });
       renderer.dispose();
     }
   };
