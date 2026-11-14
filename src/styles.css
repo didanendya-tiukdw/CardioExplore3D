@@ -3,6 +3,8 @@
   color-scheme: dark;
   font-synthesis: none;
   text-rendering: optimizeLegibility;
+  -webkit-font-smoothing: antialiased;
+  -moz-osx-font-smoothing: grayscale;
   --page: #09131d;
   --page-soft: #0c1924;
   --surface: #101f2b;
@@ -303,6 +305,32 @@ h1, h2, h3, p { margin-top: 0; }
   .sidebar { padding-left: 38px; padding-right: 20px; }
   .lesson { margin: 0 auto; }
 }
+@media (min-width: 1200px) and (max-width: 1500px) {
+  .top-nav { display: flex; }
+  .top-nav a { min-width: 70px; justify-items: center; font-size: 13px; }
+  .level-grid { grid-template-columns: repeat(4, minmax(0, 1fr)); }
+  .workspace { grid-template-columns: 230px minmax(0, 1fr); }
+  .lesson-grid { grid-template-columns: minmax(0, 1.35fr) minmax(320px, .85fr); }
+  .catalog-main .level-grid { gap: 10px; }
+  .catalog-main .level-card { min-height: 150px; padding: 12px; gap: 6px; }
+  .catalog-main .level-number { font-size: 10px; }
+  .catalog-main .level-card strong { font-size: 13px; }
+  .catalog-main .level-card > span:nth-last-child(2) { min-height: 32px; font-size: 11px; }
+  .catalog-main .level-open { font-size: 11px; }
+  .catalog-main .section-heading > p { font-size: 13px; }
+  .catalog-main .catalog-top .back-link { font-size: 12px; }
+  .catalog-main .catalog-top .button { font-size: 12px; }
+  .footer { font-size: 10px; }
+}
+@media (min-width: 1001px) and (min-height: 850px) and (max-height: 1100px) {
+  .catalog-main { padding-top: 18px; padding-bottom: 18px; }
+  .catalog-main .levels-section { padding-top: 20px; }
+  .catalog-main .section-heading { margin-bottom: 14px; }
+  .catalog-main .level-card { min-height: 150px; }
+  .catalog-main .disclaimer-strip { margin-top: 14px; }
+  .lesson { padding-top: 18px; padding-bottom: 14px; }
+  .lesson-header { margin-bottom: 14px; }
+}
 @media (max-width: 1000px) {
   .topbar { padding-inline: 20px; }
   .hero { grid-template-columns: 1fr 1fr; gap: 18px; }
@@ -372,6 +400,24 @@ h1, h2, h3, p { margin-top: 0; }
   .structure-list { grid-template-columns: 1fr 1fr; }
   .bottom-bar { align-items: flex-start; flex-direction: column; padding: 10px 0; }
   .level-pager { width: 100%; justify-content: space-between; }
+}
+
+@media (min-width: 1001px) {
+  .icon-button, .button { min-height: 44px; }
+  .top-nav a { min-height: 44px; }
+  .back-link, .all-levels { min-height: 44px; display: inline-flex; align-items: center; }
+  .disclaimer-strip > a { min-height: 40px; display: inline-flex; align-items: center; padding-inline: 5px; }
+  .chapter-link { min-height: 44px; padding-inline: 10px; font-size: 11px; }
+  .small-control { min-width: 44px; min-height: 44px; padding-inline: 10px; font-size: 11px; }
+  .level-pager a { min-height: 44px; display: inline-flex; align-items: center; padding-inline: 6px; font-size: 11px; }
+  .structure-option, .quiz-option { min-height: 44px; padding: 8px 10px; font-size: 11px; }
+  .control-row .button, .visibility-actions .button { min-height: 44px; font-size: 11px; }
+  .text-action { min-height: 44px; padding-block: 8px; font-size: 11px; }
+  .form-label { font-size: 11px; }
+  .form-label select, .form-label textarea { min-height: 44px; padding: 10px; font-size: 14px; }
+  .check-row { min-height: 44px; align-items: center; font-size: 11px; }
+  .check-row input { width: 20px; height: 20px; }
+  .mode-option { min-height: 58px; }
 }
 
 @media (prefers-reduced-motion: reduce) {
