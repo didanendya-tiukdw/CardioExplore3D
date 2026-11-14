@@ -1,0 +1,28 @@
+<!doctype html>
+<html lang="id">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <meta name="theme-color" content="#09131d" />
+    <meta name="description" content="Pilih salah satu dari 12 level pembelajaran CardioExplore 3D." />
+    <title>Semua Level — CardioExplore 3D</title>
+    <script>
+      (() => {
+        const savedTheme = localStorage.getItem('cardio-theme');
+        const systemTheme = matchMedia('(prefers-color-scheme: light)').matches ? 'light' : 'dark';
+        document.documentElement.dataset.theme = savedTheme || systemTheme;
+      })();
+    </script>
+    <link rel="stylesheet" href="/src/styles.css" />
+    <style>
+      :root { color-scheme: dark; background: #09131d; }
+      :root[data-theme='light'] { color-scheme: light; background: #f3f7f8; }
+      body { min-height: 100vh; margin: 0; background: #09131d; }
+      :root[data-theme='light'] body { background: #f3f7f8; }
+    </style>
+  </head>
+  <body data-page="catalog">
+    <div id="app"></div>
+    <script type="module" src="/src/main.js"></script>
+  </body>
+</html>

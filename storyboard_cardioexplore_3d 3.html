@@ -1,0 +1,242 @@
+<!DOCTYPE html>
+<html lang="id">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Storyboard CardioExplore 3D</title>
+  <style>
+    :root{
+      --bg:#eef6f9;--surface:#ffffff;--ink:#173042;--muted:#5d7180;
+      --primary:#0e7490;--primary2:#155e75;--red:#db4055;--blue:#2764c7;
+      --green:#15803d;--amber:#b45309;--line:#cfe0e7;--soft:#e6f4f7;
+      --shadow:0 10px 28px rgba(18,58,74,.10);--radius:18px;
+    }
+    *{box-sizing:border-box}
+    html{scroll-behavior:smooth}
+    body{margin:0;font-family:Inter,ui-sans-serif,system-ui,-apple-system,"Segoe UI",sans-serif;background:var(--bg);color:var(--ink);line-height:1.55}
+    button,select{font:inherit}
+    button{cursor:pointer}
+    .topbar{position:sticky;top:0;z-index:20;background:rgba(255,255,255,.94);backdrop-filter:blur(10px);border-bottom:1px solid var(--line)}
+    .topbar-inner{max-width:1320px;margin:auto;padding:12px 20px;display:flex;align-items:center;gap:12px;justify-content:space-between}
+    .brand{font-weight:800;color:var(--primary2);letter-spacing:.2px}.brand span{color:var(--red)}
+    .actions{display:flex;gap:8px;flex-wrap:wrap}
+    .btn{border:1px solid var(--line);background:#fff;color:var(--ink);padding:9px 13px;border-radius:10px;font-weight:700}
+    .btn:hover,.btn:focus-visible{border-color:var(--primary);outline:3px solid rgba(14,116,144,.16)}
+    .btn.primary{background:var(--primary);color:#fff;border-color:var(--primary)}
+    .hero{background:linear-gradient(135deg,#0f6077,#173e59 58%,#74283a);color:#fff}
+    .hero-inner{max-width:1320px;margin:auto;padding:56px 22px 48px;display:grid;grid-template-columns:1.35fr .65fr;gap:32px;align-items:center}
+    h1{font-size:clamp(2rem,4vw,3.7rem);line-height:1.05;margin:0 0 16px;max-width:900px}
+    .subtitle{font-size:1.06rem;max-width:900px;color:#dcecf2}
+    .meta{display:flex;gap:9px;flex-wrap:wrap;margin-top:20px}.tag{background:rgba(255,255,255,.13);border:1px solid rgba(255,255,255,.22);border-radius:999px;padding:7px 11px;font-size:.88rem}
+    .hero-heart{min-height:250px;display:grid;place-items:center;position:relative}
+    .heart{font-size:150px;filter:drop-shadow(0 20px 20px rgba(0,0,0,.25));animation:pulse 2.1s ease-in-out infinite;transform-origin:center}
+    .orbit{position:absolute;width:265px;height:265px;border:1px solid rgba(255,255,255,.28);border-radius:50%;transform:rotate(-20deg)}
+    .orbit:after{content:"3D";position:absolute;right:17px;top:34px;background:#fff;color:#173e59;border-radius:50%;width:45px;height:45px;display:grid;place-items:center;font-weight:900}
+    @keyframes pulse{0%,100%{transform:scale(1)}50%{transform:scale(1.055)}}
+    main{max-width:1320px;margin:auto;padding:28px 20px 60px}
+    .summary{display:grid;grid-template-columns:repeat(4,1fr);gap:14px;margin-top:-55px;position:relative;z-index:2}
+    .metric{background:var(--surface);box-shadow:var(--shadow);padding:19px;border-radius:15px;border:1px solid var(--line)}
+    .metric b{display:block;font-size:1.7rem;color:var(--primary)}.metric span{font-size:.88rem;color:var(--muted)}
+    .section-head{display:flex;align-items:end;justify-content:space-between;gap:18px;margin:42px 0 16px}
+    h2{margin:0;font-size:1.7rem}.section-head p{margin:0;color:var(--muted);max-width:700px}
+    .filters{display:flex;gap:8px;flex-wrap:wrap;margin:15px 0 22px}
+    .filter{border:1px solid var(--line);background:#fff;border-radius:999px;padding:8px 13px;font-weight:700;color:var(--muted)}
+    .filter.active{background:var(--primary);color:#fff;border-color:var(--primary)}
+    .storyboard{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:18px}
+    .scene{background:var(--surface);border:1px solid var(--line);border-radius:var(--radius);overflow:hidden;box-shadow:0 5px 18px rgba(18,58,74,.07)}
+    .scene.hidden{display:none}
+    .scene-top{display:flex;align-items:center;justify-content:space-between;padding:15px 17px;border-bottom:1px solid var(--line);background:#f9fcfd}
+    .scene-num{display:flex;align-items:center;gap:10px;font-weight:850}.num{width:34px;height:34px;display:grid;place-items:center;border-radius:50%;background:var(--primary);color:#fff}.duration{color:var(--muted);font-size:.86rem}
+    .frame{min-height:260px;background:#d9eaf0;padding:17px;display:grid;grid-template-columns:1fr 190px;gap:14px;position:relative}
+    .viewport{border-radius:13px;background:radial-gradient(circle at 50% 34%,#315f72,#102d3b 72%);position:relative;overflow:hidden;display:grid;place-items:center;color:#fff}
+    .viewport.light{background:linear-gradient(145deg,#edf7f9,#b7d7e0);color:var(--ink)}
+    .heart-mini{font-size:86px;filter:drop-shadow(0 11px 12px rgba(0,0,0,.28))}
+    .blood-path{position:absolute;left:11%;right:11%;bottom:20px;height:7px;border-radius:999px;background:linear-gradient(90deg,var(--blue) 0 46%,#fff 46% 54%,var(--red) 54%);box-shadow:0 0 12px rgba(255,255,255,.45)}
+    .label-chip{position:absolute;background:#fff;color:var(--ink);border-radius:8px;padding:5px 8px;font-size:.74rem;box-shadow:0 4px 12px rgba(0,0,0,.15)}
+    .lc1{top:22px;left:20px}.lc2{top:54px;right:14px}.lc3{bottom:50px;left:18px}
+    .panel{background:#fff;border-radius:13px;padding:12px;border:1px solid rgba(13,79,97,.14)}
+    .panel h4{margin:0 0 8px;font-size:.94rem}.panel p{font-size:.77rem;color:var(--muted);margin:0 0 10px}
+    .mini-btn{display:block;width:100%;border:0;border-radius:8px;margin:7px 0;padding:7px;background:var(--soft);color:var(--primary2);font-weight:700;font-size:.77rem}
+    .mini-btn.em{background:var(--primary);color:#fff}.progress{height:7px;background:#d8e7eb;border-radius:7px;overflow:hidden}.progress span{display:block;height:100%;background:var(--primary);width:60%}
+    .wire-login{width:min(390px,90%);background:#fff;border-radius:15px;padding:18px;box-shadow:var(--shadow);color:var(--ink)}
+    .wire-login h3{margin:0 0 8px}.notice{background:#fff4d8;border:1px solid #f1c96d;padding:9px;border-radius:8px;font-size:.76rem;margin:10px 0}
+    .mode-cards{display:grid;grid-template-columns:repeat(3,1fr);gap:9px;width:90%}.mode-card{background:#fff;color:var(--ink);border-radius:12px;padding:13px;text-align:center;box-shadow:0 7px 16px rgba(0,0,0,.15)}.mode-card b{display:block;font-size:.77rem}.mode-card span{font-size:1.6rem}
+    .quiz{background:#fff;color:var(--ink);width:88%;padding:17px;border-radius:13px}.quiz h3{font-size:1rem;margin:0 0 10px}.option{padding:8px;border:1px solid var(--line);border-radius:8px;margin:6px 0;font-size:.78rem}.option.correct{border-color:var(--green);background:#eaf8ef}.option.wrong{border-color:var(--red);background:#fff0f2}
+    .review{background:#fff;color:var(--ink);width:90%;padding:15px;border-radius:13px}.review-row{display:grid;grid-template-columns:1fr repeat(4,28px);gap:5px;align-items:center;font-size:.7rem;margin:7px 0}.score{height:25px;border:1px solid var(--line);border-radius:5px;display:grid;place-items:center}.score.active{background:var(--primary);color:#fff}
+    .scene-body{padding:18px}.scene-body h3{margin:0 0 10px;font-size:1.22rem}.desc{color:var(--muted);margin:0 0 14px}
+    .grid-info{display:grid;grid-template-columns:1fr 1fr;gap:13px}.info{background:#f6fafb;border-radius:11px;padding:12px}.info b{display:block;color:var(--primary2);font-size:.82rem;margin-bottom:4px}.info ul{padding-left:18px;margin:4px 0;font-size:.86rem}.info p{font-size:.86rem;margin:0}
+    .dialogue{margin-top:13px;padding:11px;border-left:4px solid var(--red);background:#fff5f6;border-radius:0 9px 9px 0;font-size:.86rem}
+    .research-map{display:grid;grid-template-columns:repeat(5,1fr);gap:10px}.phase{padding:16px 12px;border-radius:13px;background:#fff;border:1px solid var(--line);text-align:center}.phase b{display:block;color:var(--primary2)}.phase span{font-size:.8rem;color:var(--muted)}
+    .legend{padding:17px;background:#fff;border:1px solid var(--line);border-radius:14px;margin-top:22px}.legend-grid{display:grid;grid-template-columns:repeat(3,1fr);gap:14px}.legend b{color:var(--primary2)}
+    .footer-note{margin-top:28px;background:#173e59;color:#e5f3f7;border-radius:16px;padding:22px}.footer-note h3{margin-top:0;color:#fff}
+    @media(max-width:900px){.hero-inner{grid-template-columns:1fr}.hero-heart{display:none}.summary{grid-template-columns:repeat(2,1fr);margin-top:-35px}.storyboard{grid-template-columns:1fr}.research-map{grid-template-columns:1fr 1fr}.legend-grid{grid-template-columns:1fr}.frame{grid-template-columns:1fr}.panel{display:none}}
+    @media(max-width:520px){.topbar-inner{align-items:flex-start;flex-direction:column}.summary{grid-template-columns:1fr}.grid-info{grid-template-columns:1fr}.research-map{grid-template-columns:1fr}.frame{min-height:220px}.mode-cards{grid-template-columns:1fr}.mode-card{display:flex;align-items:center;gap:10px;text-align:left}.mode-card span{font-size:1.2rem}}
+    @media print{.topbar,.filters{display:none}.hero{background:#173e59!important;-webkit-print-color-adjust:exact;print-color-adjust:exact}.scene{break-inside:avoid;box-shadow:none}.storyboard{grid-template-columns:1fr 1fr}body{background:#fff}main{max-width:none}.summary{margin-top:15px}.heart{animation:none}}
+  </style>
+</head>
+<body>
+  <header class="topbar">
+    <div class="topbar-inner">
+      <div class="brand">CardioExplore <span>3D</span> · Storyboard</div>
+      <div class="actions">
+        <button class="btn" id="expandBtn" type="button">Tampilkan Semua Detail</button>
+        <button class="btn primary" id="printBtn" type="button">Cetak / Simpan PDF</button>
+      </div>
+    </div>
+  </header>
+
+  <section class="hero">
+    <div class="hero-inner">
+      <div>
+        <h1>Storyboard Web-Based Interactive 3D Cardiac Simulation</h1>
+        <p class="subtitle">Storyboard produksi untuk studi awal pengembangan media pembelajaran jantung berbasis HTML5, JavaScript, WebGL, dan Three.js. Fokus MVP adalah eksplorasi anatomi, visualisasi sirkulasi, guided learning, latihan sederhana, dan expert review kedokteran.</p>
+        <div class="meta">
+          <span class="tag">Format: Web 3D</span><span class="tag">Metode: DSRM</span><span class="tag">Target: Health Education</span><span class="tag">Status: Preliminary Study</span>
+        </div>
+      </div>
+      <div class="hero-heart"><div class="orbit"></div><div class="heart">🫀</div></div>
+    </div>
+  </section>
+
+  <main>
+    <section class="summary" aria-label="Ringkasan storyboard">
+      <div class="metric"><b>12</b><span>scene utama</span></div>
+      <div class="metric"><b>8–12</b><span>menit alur eksplorasi</span></div>
+      <div class="metric"><b>3</b><span>mode pembelajaran</span></div>
+      <div class="metric"><b>1</b><span>siklus sirkulasi lengkap</span></div>
+    </section>
+
+    <div class="section-head">
+      <div><h2>Alur Makro Produk dan Penelitian</h2><p>Urutan menghubungkan pengalaman pengguna dengan bukti yang diperlukan dalam preliminary study.</p></div>
+    </div>
+    <section class="research-map">
+      <div class="phase"><b>1. Orientasi</b><span>Disclaimer dan tujuan belajar</span></div>
+      <div class="phase"><b>2. Eksplorasi</b><span>Manipulasi anatomi 3D</span></div>
+      <div class="phase"><b>3. Visualisasi</b><span>Sirkulasi pulmonal dan sistemik</span></div>
+      <div class="phase"><b>4. Latihan</b><span>Identifikasi dan pengurutan</span></div>
+      <div class="phase"><b>5. Review</b><span>Expert judgment dan revisi</span></div>
+    </section>
+
+    <div class="section-head">
+      <div><h2>Storyboard Per Scene</h2><p>Setiap kartu memuat rancangan layar, tujuan, aksi pengguna, respons sistem, konten medis, serta bukti penelitian.</p></div>
+    </div>
+    <div class="filters" role="group" aria-label="Filter scene">
+      <button class="filter active" data-filter="all" type="button">Semua</button>
+      <button class="filter" data-filter="onboarding" type="button">Onboarding</button>
+      <button class="filter" data-filter="explore" type="button">Eksplorasi</button>
+      <button class="filter" data-filter="circulation" type="button">Sirkulasi</button>
+      <button class="filter" data-filter="assessment" type="button">Latihan</button>
+      <button class="filter" data-filter="research" type="button">Research</button>
+    </div>
+
+    <section class="storyboard" id="storyboard">
+      <article class="scene" data-category="onboarding">
+        <div class="scene-top"><div class="scene-num"><span class="num">1</span> Landing & Loading</div><span class="duration">10–20 detik</span></div>
+        <div class="frame"><div class="viewport"><div class="heart-mini">🫀</div><div class="blood-path"></div><span class="label-chip lc1">WebGL check</span><span class="label-chip lc2">Loading 78%</span></div><div class="panel"><h4>CardioExplore 3D</h4><p>Memuat model jantung dan konten pembelajaran.</p><div class="progress"><span style="width:78%"></span></div><button class="mini-btn">Mode kualitas: Auto</button></div></div>
+        <div class="scene-body"><h3>Pembukaan dan pemeriksaan kompatibilitas</h3><p class="desc">Membentuk ekspektasi pengguna, memeriksa dukungan WebGL, dan memuat GLB serta konten medis secara transparan.</p><div class="grid-info"><div class="info"><b>VISUAL & AUDIO</b><ul><li>Logo dan judul penelitian.</li><li>Animasi denyut dekoratif, tanpa klaim fisiologis.</li><li>Progress bar dan ukuran aset.</li></ul></div><div class="info"><b>RESPONS SISTEM</b><ul><li>Deteksi WebGL.</li><li>Pilih kualitas otomatis.</li><li>Tampilkan fallback jika gagal.</li></ul></div></div><div class="dialogue"><strong>Copy:</strong> “Explore the structure and circulation of the human heart through an interactive 3D educational visualization.”</div></div>
+      </article>
+
+      <article class="scene" data-category="onboarding">
+        <div class="scene-top"><div class="scene-num"><span class="num">2</span> Disclaimer & Start</div><span class="duration">20–30 detik</span></div>
+        <div class="frame"><div class="viewport light"><div class="wire-login"><h3>Before You Begin</h3><div class="notice">Educational visualization only. Not a medical device and not intended for diagnosis or treatment.</div><label><input type="checkbox" checked disabled> I understand the visualization is simplified.</label><button class="mini-btn em">Enter CardioExplore 3D</button></div></div><div class="panel"><h4>Research Notice</h4><p>Log lokal anonim dapat mencatat mode, objek, durasi, dan hasil tugas.</p><button class="mini-btn">Read full notice</button></div></div>
+        <div class="scene-body"><h3>Persetujuan penggunaan dan batasan produk</h3><p class="desc">Menegaskan bahwa sistem adalah artefak edukasional, bukan simulasi klinis, serta menjelaskan data interaksi yang direkam.</p><div class="grid-info"><div class="info"><b>AKSI PENGGUNA</b><p>Membaca disclaimer, membuka detail privasi, lalu masuk ke aplikasi.</p></div><div class="info"><b>BUKTI PENELITIAN</b><p>Event: <code>session_started</code>, versi prototipe, versi konten, kelas perangkat, mode kualitas.</p></div></div></div>
+      </article>
+
+      <article class="scene" data-category="onboarding">
+        <div class="scene-top"><div class="scene-num"><span class="num">3</span> Mode Selection</div><span class="duration">15–25 detik</span></div>
+        <div class="frame"><div class="viewport"><div class="mode-cards"><div class="mode-card"><span>🔎</span><b>Free Exploration</b></div><div class="mode-card"><span>🩸</span><b>Guided Circulation</b></div><div class="mode-card"><span>✓</span><b>Practice Tasks</b></div></div></div><div class="panel"><h4>Learning Objective</h4><p>Identify major structures and trace a simplified circulation sequence.</p><button class="mini-btn em">Start Guided Mode</button></div></div>
+        <div class="scene-body"><h3>Beranda pemilihan mode</h3><p class="desc">Pengguna dapat memilih eksplorasi bebas, guided circulation, atau latihan. Untuk penggunaan pertama, guided circulation diberi rekomendasi visual.</p><div class="grid-info"><div class="info"><b>DESAIN INTERAKSI</b><p>Tiga kartu, deskripsi pendek, satu rekomendasi, dan tombol Help yang selalu tersedia.</p></div><div class="info"><b>FAILURE MODE</b><p>Jangan membuat mode terasa seperti level game wajib. Pengguna harus dapat berpindah mode tanpa kehilangan stabilitas scene.</p></div></div></div>
+      </article>
+
+      <article class="scene" data-category="explore">
+        <div class="scene-top"><div class="scene-num"><span class="num">4</span> Free 3D Exploration</div><span class="duration">1–2 menit</span></div>
+        <div class="frame"><div class="viewport"><div class="heart-mini">🫀</div><span class="label-chip lc1">Drag to rotate</span><span class="label-chip lc2">Scroll to zoom</span><span class="label-chip lc3">Click a structure</span></div><div class="panel"><h4>Explore</h4><p>Rotate, zoom, select, focus, and reset the model.</p><button class="mini-btn em">Reset Camera</button><button class="mini-btn">Structure List</button></div></div>
+        <div class="scene-body"><h3>Eksplorasi spasial model jantung</h3><p class="desc">Pengguna mengenali orientasi model dengan rotate, zoom, pan terbatas, fokus, dan reset.</p><div class="grid-info"><div class="info"><b>CAMERA</b><ul><li>Orbit dengan batas sudut.</li><li>Zoom dibatasi agar tidak clipping.</li><li>Reset ke orientasi anterior standar yang disepakati.</li></ul></div><div class="info"><b>LOGGING</b><ul><li><code>mode_changed</code></li><li><code>camera_reset</code></li><li>Waktu hingga struktur pertama dipilih</li></ul></div></div></div>
+      </article>
+
+      <article class="scene" data-category="explore">
+        <div class="scene-top"><div class="scene-num"><span class="num">5</span> Structure Selection</div><span class="duration">30–60 detik/struktur</span></div>
+        <div class="frame"><div class="viewport"><div class="heart-mini">🫀</div><span class="label-chip lc2">Left ventricle</span><span class="label-chip lc3">Selected</span></div><div class="panel"><h4>Left Ventricle</h4><p>A major lower chamber associated with systemic circulation. Final description requires medical approval.</p><button class="mini-btn em">Focus</button><button class="mini-btn">Isolate</button><button class="mini-btn">Hide</button></div></div>
+        <div class="scene-body"><h3>Pemilihan, highlight, dan progressive disclosure</h3><p class="desc">Klik/tap pada struktur memanggil semantic ID, memberi highlight, dan menampilkan konten versi medis yang sesuai.</p><div class="grid-info"><div class="info"><b>STRUKTUR MVP</b><p>Empat ruang jantung, aorta, vena cava superior/inferior, arteri pulmonalis, dan vena pulmonalis.</p></div><div class="info"><b>AKSESIBILITAS</b><p>Daftar struktur menjadi alternatif pemilihan melalui canvas. Warna highlight bukan satu-satunya penanda.</p></div></div><div class="dialogue"><strong>Expert checkpoint:</strong> posisi relatif, istilah, deskripsi, orientasi, dan penyederhanaan struktur.</div></div>
+      </article>
+
+      <article class="scene" data-category="explore">
+        <div class="scene-top"><div class="scene-num"><span class="num">6</span> Isolate & Restore</div><span class="duration">30–45 detik</span></div>
+        <div class="frame"><div class="viewport"><div class="heart-mini" style="opacity:.23">🫀</div><span class="label-chip lc1">Other structures dimmed</span><span class="label-chip lc2">Aorta isolated</span></div><div class="panel"><h4>Visibility</h4><p>Observe a structure without losing context.</p><button class="mini-btn em">Restore All</button><button class="mini-btn">Show Context</button></div></div>
+        <div class="scene-body"><h3>Isolasi struktur dan pengembalian konteks</h3><p class="desc">Mendukung observasi detail tanpa membuat pengguna tersesat dalam scene.</p><div class="grid-info"><div class="info"><b>PERILAKU</b><p>Isolate meredupkan struktur lain. Hide menyembunyikan satu struktur. Restore All mengembalikan default.</p></div><div class="info"><b>RISIKO</b><p>Struktur yang diisolasi dapat kehilangan konteks anatomi. Karena itu “Show Context” harus selalu tersedia.</p></div></div></div>
+      </article>
+
+      <article class="scene" data-category="circulation">
+        <div class="scene-top"><div class="scene-num"><span class="num">7</span> Circulation Overview</div><span class="duration">45–60 detik</span></div>
+        <div class="frame"><div class="viewport"><div class="heart-mini">🫀</div><div class="blood-path"></div><span class="label-chip lc1">Deoxygenated pathway</span><span class="label-chip lc2">Oxygenated pathway</span></div><div class="panel"><h4>Circulation</h4><p>Illustrative flow, not computational fluid dynamics.</p><button class="mini-btn em">▶ Play</button><button class="mini-btn">Speed: 1×</button><button class="mini-btn">Step Mode</button></div></div>
+        <div class="scene-body"><h3>Overview sirkulasi pulmonal dan sistemik</h3><p class="desc">Sistem memperkenalkan legenda, arah, dan delapan tahap aliran dalam bentuk representasi edukasional.</p><div class="grid-info"><div class="info"><b>ENCODING</b><p>Partikel bergerak, jalur menyala, label arah, serta warna biru/merah konvensional dengan disclaimer.</p></div><div class="info"><b>KONTROL</b><p>Play, pause, restart, kecepatan, serta perpindahan ke step mode.</p></div></div><div class="dialogue"><strong>Copy:</strong> “Animation speed and particle movement are illustrative and do not represent patient-specific blood flow.”</div></div>
+      </article>
+
+      <article class="scene" data-category="circulation">
+        <div class="scene-top"><div class="scene-num"><span class="num">8</span> Guided Circulation Steps</div><span class="duration">2–3 menit</span></div>
+        <div class="frame"><div class="viewport"><div class="heart-mini">🫀</div><span class="label-chip lc1">Step 3 of 8</span><span class="label-chip lc2">Right ventricle</span><span class="label-chip lc3">Next: pulmonary pathway</span></div><div class="panel"><h4>Step 3 of 8</h4><p>Flow moves from the right atrium into the right ventricle.</p><div class="progress"><span style="width:37.5%"></span></div><button class="mini-btn">← Previous</button><button class="mini-btn em">Next →</button></div></div>
+        <div class="scene-body"><h3>Guided step-by-step circulation</h3><p class="desc">Kamera, highlight, partikel, dan narasi mengikuti satu struktur/jalur per langkah untuk mengurangi beban visual.</p><div class="grid-info"><div class="info"><b>URUTAN</b><p>Venae cavae → right atrium → right ventricle → pulmonary pathway → pulmonary veins → left atrium → left ventricle → aorta.</p></div><div class="info"><b>PENGENDALIAN</b><p>Pengguna dapat replay, kembali, lanjut, pause, atau keluar ke free exploration.</p></div></div></div>
+      </article>
+
+      <article class="scene" data-category="assessment">
+        <div class="scene-top"><div class="scene-num"><span class="num">9</span> Structure Identification</div><span class="duration">1–2 menit</span></div>
+        <div class="frame"><div class="viewport"><div class="quiz"><h3>Select the chamber that receives systemic venous return.</h3><div class="option">Left atrium</div><div class="option correct">Right atrium ✓</div><div class="option">Left ventricle</div><div class="option">Right ventricle</div></div></div><div class="panel"><h4>Practice</h4><p>Task 1 of 3</p><div class="progress"><span style="width:33%"></span></div><button class="mini-btn em">Continue</button></div></div>
+        <div class="scene-body"><h3>Latihan identifikasi struktur</h3><p class="desc">Tiga tugas sederhana menguji apakah pengguna dapat menerapkan informasi yang baru dieksplorasi, tanpa mengklaim pengukuran kompetensi klinis.</p><div class="grid-info"><div class="info"><b>DATA</b><p>Task ID, jawaban, benar/salah, waktu, jumlah percobaan, dan penggunaan bantuan.</p></div><div class="info"><b>FEEDBACK</b><p>Langsung, singkat, edukasional, dan menunjukkan kembali struktur yang benar pada model.</p></div></div></div>
+      </article>
+
+      <article class="scene" data-category="assessment">
+        <div class="scene-top"><div class="scene-num"><span class="num">10</span> Sequence Task & Summary</div><span class="duration">1–2 menit</span></div>
+        <div class="frame"><div class="viewport"><div class="quiz"><h3>Arrange the circulation path</h3><div class="option correct">1. Venae cavae</div><div class="option correct">2. Right atrium</div><div class="option wrong">3. Aorta ← revise</div><div class="option">4. Right ventricle</div></div></div><div class="panel"><h4>Session Summary</h4><p>Practice only, not a competence diagnosis.</p><button class="mini-btn em">Review Path</button><button class="mini-btn">Return Home</button></div></div>
+        <div class="scene-body"><h3>Pengurutan aliran dan rangkuman sesi</h3><p class="desc">Sistem menampilkan koreksi konseptual dan mengarahkan pengguna kembali ke tahap yang relevan.</p><div class="grid-info"><div class="info"><b>RANGKUMAN</b><p>Mode yang selesai, struktur yang dibuka, tugas latihan, dan opsi meninjau kembali.</p></div><div class="info"><b>BATASAN</b><p>Jangan menggunakan label “pass/fail,” diagnosis kemampuan, atau rekomendasi klinis.</p></div></div></div>
+      </article>
+
+      <article class="scene" data-category="research">
+        <div class="scene-top"><div class="scene-num"><span class="num">11</span> Expert Review</div><span class="duration">15–30 menit/reviewer</span></div>
+        <div class="frame"><div class="viewport light"><div class="review"><h3>Medical Expert Review</h3><div class="review-row"><span>Anatomical terminology</span><span class="score">1</span><span class="score">2</span><span class="score active">3</span><span class="score">4</span></div><div class="review-row"><span>Circulation direction</span><span class="score">1</span><span class="score">2</span><span class="score">3</span><span class="score active">4</span></div><div class="review-row"><span>Risk of misconception</span><span class="score">1</span><span class="score active">2</span><span class="score">3</span><span class="score">4</span></div><button class="mini-btn em">Record Finding</button></div></div><div class="panel"><h4>Build</h4><p>Prototype 0.4.0<br>Content med-0.2</p><button class="mini-btn">Issue severity</button><button class="mini-btn">Add comment</button></div></div>
+        <div class="scene-body"><h3>Expert judgment kedokteran</h3><p class="desc">Reviewer menilai terminologi, hubungan anatomi, urutan sirkulasi, encoding, relevansi edukasional, dan potensi miskonsepsi.</p><div class="grid-info"><div class="info"><b>SKALA</b><p>1 = tidak sesuai/kritis; 2 = perlu revisi mayor; 3 = sesuai dengan revisi minor; 4 = sesuai.</p></div><div class="info"><b>OUTPUT</b><p>Finding ID, severity, rekomendasi, disposition, owner, status, serta bukti perbaikan.</p></div></div><div class="dialogue"><strong>Metode:</strong> co-author medis diposisikan sebagai co-designer/internal review; klaim independent expert review memerlukan reviewer tambahan.</div></div>
+      </article>
+
+      <article class="scene" data-category="research">
+        <div class="scene-top"><div class="scene-num"><span class="num">12</span> Revision & Research Evidence</div><span class="duration">Tahap penelitian</span></div>
+        <div class="frame"><div class="viewport light"><div class="review"><h3>Revision Traceability</h3><div class="option wrong">F-07 · Flow direction unclear · Major</div><div class="option correct">Resolved in prototype 0.5.0 ✓</div><div class="option">Evidence: screenshot + regression T-007</div><button class="mini-btn em">Archive Study Release</button></div></div><div class="panel"><h4>Release Gate</h4><p>0 critical findings<br>Must requirements passed<br>Licenses archived</p><button class="mini-btn em">Ready</button></div></div>
+        <div class="scene-body"><h3>Revisi, regression test, dan pengarsipan bukti</h3><p class="desc">Temuan expert dihubungkan ke revisi artefak, pengujian ulang, dan versi rilis penelitian.</p><div class="grid-info"><div class="info"><b>BUKTI PAPER</b><p>Diagram arsitektur, screenshot, test matrix, performa perangkat, tabel temuan, dan before-after revision.</p></div><div class="info"><b>EXIT CRITERIA</b><p>Tidak ada temuan kritis, seluruh Must requirements lulus, disclaimer tampil, dan build dapat direproduksi.</p></div></div></div>
+      </article>
+    </section>
+
+    <section class="legend">
+      <h2>Pedoman Produksi</h2>
+      <div class="legend-grid">
+        <div><b>Aspek Medis</b><p>Semua label, deskripsi, urutan dan warna harus memiliki status review. Animasi tidak boleh dipresentasikan sebagai aliran fisiologis kuantitatif.</p></div>
+        <div><b>Aspek Informatika</b><p>Gunakan semantic node ID, modul Three.js terpisah, konten JSON berversi, logging anonim, dan acceptance test yang dapat direplikasi.</p></div>
+        <div><b>Aspek Penelitian</b><p>Preliminary study menilai kelengkapan artefak, fungsi, performa, kompatibilitas, dan revisi berbasis expert review, bukan efektivitas belajar.</p></div>
+      </div>
+    </section>
+
+    <section class="footer-note">
+      <h3>Definition of Storyboard Ready</h3>
+      <p>Storyboard siap digunakan sebagai dasar implementasi ketika struktur jantung MVP, istilah medis, urutan sirkulasi, target perangkat, dan format expert review telah disepakati. Setelah itu, setiap scene dapat langsung diturunkan menjadi issue atau user story pada backlog pengembangan.</p>
+    </section>
+  </main>
+
+  <script>
+    (() => {
+      const root = document;
+      const filters = [...root.querySelectorAll('.filter')];
+      const scenes = [...root.querySelectorAll('.scene')];
+      filters.forEach(btn => btn.addEventListener('click', () => {
+        filters.forEach(x => x.classList.remove('active'));
+        btn.classList.add('active');
+        const value = btn.dataset.filter;
+        scenes.forEach(scene => scene.classList.toggle('hidden', value !== 'all' && scene.dataset.category !== value));
+      }));
+      root.getElementById('printBtn').addEventListener('click', () => window.print());
+      root.getElementById('expandBtn').addEventListener('click', () => {
+        filters.forEach(x => x.classList.remove('active'));
+        filters[0].classList.add('active');
+        scenes.forEach(scene => scene.classList.remove('hidden'));
+        root.getElementById('storyboard').scrollIntoView({behavior:'smooth', block:'start'});
+      });
+    })();
+  </script>
+</body>
+</html>
