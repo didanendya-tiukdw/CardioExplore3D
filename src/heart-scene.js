@@ -4,7 +4,7 @@ import { circulationSteps, structures } from './content.js';
 
 const palette = {
   dark: { background: 0x0b1722, fog: 0x0b1722, floor: 0x12212c },
-  light: { background: 0xeaf2f4, fog: 0xeaf2f4, floor: 0xdce9ec }
+  light: { background: 0xeaf1f3, fog: 0xeaf1f3, floor: 0xdce9ec }
 };
 
 export function createHeartScene(container, onSelect) {
@@ -16,7 +16,7 @@ export function createHeartScene(container, onSelect) {
   const camera = new THREE.PerspectiveCamera(36, 1, 0.1, 100);
   camera.position.set(0, 0.15, 7.3);
   const renderer = new THREE.WebGLRenderer({ antialias: true, alpha: false, powerPreference: 'high-performance' });
-  renderer.setPixelRatio(Math.min(window.devicePixelRatio || 1, 2.25));
+  renderer.setPixelRatio(Math.min(window.devicePixelRatio || 1, 2));
   renderer.outputColorSpace = THREE.SRGBColorSpace;
   renderer.toneMapping = THREE.ACESFilmicToneMapping;
   renderer.toneMappingExposure = 1.12;
@@ -52,6 +52,8 @@ export function createHeartScene(container, onSelect) {
   const nodeById = new Map();
   const defaultScales = new Map();
   const pickables = [];
+  const appendages = [];
+  const coronaryMeshes = [];
 
   const bodyProfile = [
     new THREE.Vector3(0.015, -1.78, 0.025),
@@ -108,6 +110,7 @@ export function createHeartScene(container, onSelect) {
     appendage.scale.set(...scale);
     appendage.rotation.z = rotation;
     heartGroup.add(appendage);
+    appendages.push(appendage);
   });
 
   function addChamber(entry) {
@@ -225,6 +228,7 @@ export function createHeartScene(container, onSelect) {
       const curve = new THREE.CatmullRomCurve3(points.map(point => new THREE.Vector3(...point)));
       const vessel = new THREE.Mesh(new THREE.TubeGeometry(curve, 32, radius, 7, false), coronaryMaterial);
       heartGroup.add(vessel);
+      coronaryMeshes.push(vessel);
     });
   }
 
@@ -277,6 +281,7 @@ export function createHeartScene(container, onSelect) {
   let flowActive = false;
   let flowProgress = 0;
   let activeStep = -1;
+  let isolated = false;
   let theme = 'dark';
   let lastTime = 0;
 
@@ -284,10 +289,13 @@ export function createHeartScene(container, onSelect) {
     const entry = structures.find(item => item.id === id);
     if (!entry) return;
     selectedId = id;
+    if (isolated) nodeById.forEach((object, nodeId) => { object.visible = nodeId === id; });
     pickables.forEach(mesh => {
       const selected = mesh.userData.structureId === id;
       const baseOpacity = mesh.userData.baseOpacity ?? 1;
-      mesh.material.opacity = selected ? Math.max(baseOpacity, 0.17) : baseOpacity;
+      mesh.material.opacity = selected
+        ? isolated && entry.group === 'Ruang jantung' ? 0.72 : Math.max(baseOpacity, 0.17)
+        : baseOpacity;
       mesh.material.emissiveIntensity = selected ? 0.2 : 0.035;
       mesh.material.emissive.setHex(selected ? 0xffc15a : mesh.material.color.getHex());
     });
@@ -301,6 +309,23 @@ export function createHeartScene(container, onSelect) {
     const position = new THREE.Vector3();
     object.getWorldPosition(position);
     controls.target.lerp(position, 0.72);
+  }
+
+  function setView(view) {
+    camera.position.set(0, 0.15, view === 'posterior' ? -7.3 : 7.3);
+    controls.target.set(0, 0, 0);
+    controls.update();
+  }
+
+  function isolate(id) {
+    if (!nodeById.has(id)) return false;
+    isolated = true;
+    heartBody.visible = false;
+    appendages.forEach(object => { object.visible = false; });
+    coronaryMeshes.forEach(object => { object.visible = false; });
+    nodeById.forEach((object, nodeId) => { object.visible = nodeId === id; });
+    select(id);
+    return true;
   }
 
   function handlePointer(event) {
@@ -368,6 +393,10 @@ export function createHeartScene(container, onSelect) {
   }
 
   function restore() {
+    isolated = false;
+    heartBody.visible = true;
+    appendages.forEach(object => { object.visible = true; });
+    coronaryMeshes.forEach(object => { object.visible = true; });
     nodeById.forEach(object => {
       object.visible = true;
       object.scale.copy(defaultScales.get(object.name));
@@ -393,6 +422,8 @@ export function createHeartScene(container, onSelect) {
     focus,
     setFlow,
     setStep,
+    setView,
+    isolate,
     setTheme,
     restore,
     get selectedId() { return selectedId; },
